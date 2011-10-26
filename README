@@ -1,0 +1,6 @@
+How to use Instagram API Library for Codeigniter 
+
+1. Copy file libraries/instagram.php to your codeigniter_path application/libraries/
+2. Copy file config/instagram.php to your codeigniter_path application/config/
+3. Fill your client_id, client_secret, and redirect_uri in config/instagram.php
+4. Create a controller similiar in controller/welcome.php
