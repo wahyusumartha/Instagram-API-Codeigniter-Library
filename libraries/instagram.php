@@ -37,7 +37,7 @@ class Instagram {
 	* @var array
 	*	Instagram Application Scope 
 	*/
-	public $scope = array();
+	private $_scope = array();
 	
 	/**
 	* @var string url 
@@ -71,8 +71,9 @@ class Instagram {
 	
 	/**
 	* Go to Instagram Authorization Page
+	* @deprecated
 	*/
-	public function login($scope = array()){
+	public function login(){
 		
 		$ci =& get_instance();
 		$ci->load->helper('url');
@@ -83,7 +84,7 @@ class Instagram {
 		}
 		else
 		{
-			redirect($this->url_authorize($scope));
+			redirect($this->url_authorize($this->_scope));
 		}
 	}
 	
@@ -118,7 +119,7 @@ class Instagram {
 	* Return the authorization url 
 	* @return string
 	*/
-	public function url_authorize($scope = array()){
+	public function url_authorize(){
 		$url = '';
 		$url .= $this->_url_authorized;
 		
@@ -133,16 +134,14 @@ class Instagram {
 			$url .= '&';
 			$url .= 'redirect_uri='.$this->redirect_uri;
 		}
-		
-		$this->scope = $scope;
-		
+				
 		$url .= '&scope=';
 		
 		$i = 0;
 		
-		foreach($this->scope as $value){
+		foreach($this->_scope as $value){
 			$i++;
-			if ($i < count($scope)) 
+			if ($i < count($this->_scope)) 
 			{
 				$url .= $value . '+';
 			}
@@ -163,9 +162,10 @@ class Instagram {
 	*/
 	public function request_access_token(){
 		$ci =& get_instance();
+		$ci->load->helper('url');
 		$code = $ci->input->get('code', TRUE);
 		
-		if (isset($code))
+		if ($code)
 		{
 			$params = array(
 				'client_id' => $this->client_id,
@@ -177,6 +177,11 @@ class Instagram {
 			
 			$response = $this->_instagram_connection->post($this->_request_access_token_url, $params);
 			$this->_set_access_token($response);
+		}
+		else
+		{
+			$scope = array('comments', 'relationships', 'likes');
+			redirect($this->url_authorize($scope));
 		}
 	}
 	
@@ -230,6 +235,19 @@ class Instagram {
 			case 'POST':
 				break;
 		}
+	}
+	
+	/**
+	* Scope Authentication
+	* @param array 
+	*	Scope (basic, comments, relationships, likes)
+	*/
+	public function set_scope($scope = array()){
+		$this->_scope = $scope;
+	}
+	
+	public function get_scope(){
+		return $this->_scope;
 	}
 }
 
