@@ -360,5 +360,5 @@ class Instagram_Exception extends Exception {
 	}
 }
 /**
-* End of Oauth2.php
+* End of instagram.php
 */
